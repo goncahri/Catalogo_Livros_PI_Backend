@@ -1,0 +1,26 @@
+// Utilize a extensão REST Client para efetuar os testes.
+// Teste da API REST de Usuários.
+@baseURL = http://localhost:3000/api/usuarios
+
+###
+// POST - Cadastro de Usuário
+# @prompt senha
+POST {{baseURL}}
+Content-Type: application/json
+
+{
+    "nome": "Usuario Teste",
+    "email": "usuario@teste.com.br",
+    "senha": "{{senha}}"
+}
+
+###
+// POST - Login do Usuário
+# @prompt senha
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+    "email": "usuario@teste.com.br",
+    "senha": "{{senha}}"
+}

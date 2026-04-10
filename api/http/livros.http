@@ -1,0 +1,81 @@
+// Utilize a extensão REST Client para testar os endpoints da sua API.
+// O token JWT é suficiente para autenticar as requisições.
+// Faça o login do usuário teste em "usuarios.http" para obter o token e atualizar no campo @token. 
+// O ID do usuário teste está embutido no token e será extraído automaticamente pelo middleware `auth.js`.
+// Após criar o livro (POST) atualize o Id do novo livro no campo @livroID.
+
+@baseURL = http://localhost:3000/api/livros
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjp7ImlkIjoiNjg0ZjNkMWM0YjE4NzRlNzk5NGQ0OTNmIn0sImlhdCI6MTc1MDAyMzQ2NywiZXhwIjoxNzUwMTA5ODY3fQ.9I5ophaU8MYA2wJvKLCAn0CDLUQ6n-3nBJVY7BuLqq8
+@livroId = 684f3e164b1874e7994d4941
+
+### GET - Lista todos os livros
+GET {{baseURL}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### GET - Lista um livro por ID
+GET {{baseURL}}/684f191777c45c8bc0af18fa
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### GET - Lista livros por filtro de avaliação mínima e máxima (nesse caso entre 4.5 e 5)
+GET {{baseURL}}?avaliacaoMin=4.5&avaliacaoMax=5
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### POST - Cria um novo livro (use o ID retornado no @livroId acima)
+POST {{baseURL}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Livro de Teste",
+  "autor": "Autor de Teste",
+  "paginas": 100,
+  "avaliacao": 4.5,
+  "dataLeitura": "2025-06-10",
+  "opiniao": "Livro criado para testes manuais."
+}
+
+###
+
+### GET - Verifica o livro recém-criado
+GET {{baseURL}}/{{livroId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### PUT - Atualiza o livro criado
+PUT {{baseURL}}/{{livroId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Livro de Teste Atualizado",
+  "autor": "Autor Atualizado",
+  "paginas": 150,
+  "avaliacao": 4.8,
+  "dataLeitura": "2025-06-11",
+  "opiniao": "Opinião atualizada para testes."
+}
+
+###
+
+### GET - Verifica o livro após a atualização
+GET {{baseURL}}/{{livroId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### DELETE - Exclui o livro de teste
+DELETE {{baseURL}}/{{livroId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
