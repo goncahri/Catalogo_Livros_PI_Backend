@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
@@ -42,3 +44,9 @@ jobs:
 
       - name: Rodar testes
         run: npm test
+
+      - name: Rodar semantic-release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
