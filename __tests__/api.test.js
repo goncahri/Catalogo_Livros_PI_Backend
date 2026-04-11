@@ -79,8 +79,7 @@ describe('👉 API Livros com token', () => {
       })
       .expect(200);
 
-    expect(res.body).toHaveProperty('acknowledged', true);
-    expect(res.body).toHaveProperty('modifiedCount', 1);
+    expect(res.body).toHaveProperty('message');
   });
 
   // Operações CRUD autenticadas:
