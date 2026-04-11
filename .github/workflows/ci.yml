@@ -34,5 +34,11 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
+      - name: Subir API em background
+        run: npm start &
+
+      - name: Esperar API ficar disponível
+        run: npx wait-on http://localhost:3000
+
       - name: Rodar testes
         run: npm test
