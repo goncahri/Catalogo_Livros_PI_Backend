@@ -1,0 +1,11 @@
+# Criar imagem do backend
+docker build -t catalogo-livros-backend .
+
+# Rodar container do backend usando o arquivo .env
+docker run --name catalogo-livros-backend-container -p 3000:3000 --env-file .env catalogo-livros-backend
+
+# Parar container
+docker stop catalogo-livros-backend-container
+
+# Remover container
+docker rm catalogo-livros-backend-container
