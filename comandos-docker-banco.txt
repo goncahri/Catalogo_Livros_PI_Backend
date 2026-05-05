@@ -1,0 +1,12 @@
+# Criar container MongoDB local
+docker run --name mongodb-catalogo-livros -p 27017:27017 -d mongo:7
+
+# String de conexão local para usar no .env
+MONGO_URI=mongodb://host.docker.internal:27017
+DB_NAME=livrosdb_local
+
+# Parar container
+docker stop mongodb-catalogo-livros
+
+# Remover container
+docker rm mongodb-catalogo-livros
