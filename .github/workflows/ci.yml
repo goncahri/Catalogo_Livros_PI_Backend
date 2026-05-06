@@ -69,6 +69,10 @@ jobs:
             ${{ env.DOCKER_IMAGE }}:hml
             ${{ env.DOCKER_IMAGE }}:develop
 
+      - name: Trigger deploy Render HML
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: curl -X POST ${{ secrets.RENDER_HML_DEPLOY_HOOK }}
+
       - name: Rodar semantic-release
         if: github.ref == 'refs/heads/main'
         env:
@@ -93,3 +97,7 @@ jobs:
           tags: |
             ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
             ${{ env.DOCKER_IMAGE }}:latest
+
+      - name: Trigger deploy Render PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: curl -X POST ${{ secrets.RENDER_PROD_DEPLOY_HOOK }}
