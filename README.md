@@ -1,295 +1,602 @@
+# 📚 Catálogo de Livros – Backend (PI)
 
-# 📚 Catálogo de Livros - API com MongoDB
+API RESTful desenvolvida para o **Projeto Integrador (PI)** da FATEC, responsável pelo gerenciamento de livros lidos, autenticação de usuários e aplicação prática de conceitos modernos de:
 
-Este projeto é uma API RESTful para gerenciamento de livros lidos. Utiliza **Node.js**, **Express** e **MongoDB** como banco de dados. Permite **cadastrar, editar, excluir e listar livros**, com recursos de **filtros**, **ordenação**, **paginação**, **validações**, **autenticação via JWT** e **documentação automática com Swagger**.
-
----
-
-## 📋 Índice
-
-- [📦 Requisitos](#-requisitos)
-- [🚀 Instalação](#-instalação)
-- [📂 Estrutura do Projeto](#-estrutura-do-projeto)
-- [🔐 Autenticação JWT](#-autenticação-jwt)
-- [🔌 Endpoints da API](#-endpoints-da-api)
-- [🧪 Testes](#-testes)
-- [📃 Documentação Swagger](#-documentação-swagger)
-- [💾 Exemplo de livro](#-exemplo-de-livro)
-- [🔥 Scripts Disponíveis](#-scripts-disponíveis)
-- [🖥️ Demo](#️-demo)
-- [🤝 Contribuição](#-contribuição)
-- [📝 Licença](#-licença)
-- [👤 Autor](#-autor)
+- **Desenvolvimento Backend**
+- **Integração Contínua (CI)**
+- **Entrega Contínua (CD)**
+- **DevOps**
+- **Observabilidade**
+- **Qualidade e Segurança de Código**
 
 ---
 
-## 📦 Requisitos
+# 🚀 Tecnologias Utilizadas
 
-- Node.js (versão 18 ou superior)
-- MongoDB (local ou na nuvem - MongoDB Atlas)
-- Ferramenta de testes de API (REST Client, Postman, Thunder Client, Insomnia, etc.)
+## Backend
+
+- Node.js
+- Express
+- MongoDB Atlas
+- JWT Authentication
+- Express Validator
+- Swagger
+
+## Testes
+
+- Jest
+- Supertest
+
+## DevOps / CI-CD
+
+- GitHub Actions
+- GitFlow
+- Semantic Release
+- Docker
+- Docker Compose
+- Docker Hub
+- Render
+
+## Observabilidade / Segurança
+
+- Better Stack
+- SonarCloud
 
 ---
 
-## 🚀 Instalação
-
-### 1️⃣ Clone o repositório
+# 📂 Estrutura do Projeto
 
 ```bash
-git clone https://github.com/seu-usuario/catalogo-livros.git
-cd catalogo-livros
+.
+├── .github/
+│   └── workflows/             # Pipelines CI/CD
+├── __tests__/                # Testes automatizados
+├── api/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── model/
+│   ├── routes/
+│   ├── swagger.json
+│   └── index.js
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+├── README.md
+└── .env
 ```
 
-### 2️⃣ Instale as dependências
+---
+
+# 🔐 Funcionalidades
+
+## Usuários
+
+- Cadastro
+- Login
+- Geração de token JWT
+
+## Livros
+
+- Cadastro
+- Listagem
+- Busca por ID
+- Edição
+- Exclusão
+- Paginação
+- Ordenação
+- Filtros
+
+## Segurança
+
+Rotas protegidas com:
+
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+# 🌐 Ambientes Publicados
+
+## 🧪 Homologação (HML)
+
+URL:
+
+```bash
+https://catalogo-livros-pi-backend-hml-docker.onrender.com
+```
+
+Origem:
+
+```bash
+develop
+```
+
+Tags Docker:
+
+```bash
+hml
+develop
+```
+
+---
+
+## 🚀 Produção (PROD)
+
+URL:
+
+```bash
+https://catalogo-livros-pi-backend-prod-docker.onrender.com
+```
+
+Origem:
+
+```bash
+main
+```
+
+Tags Docker:
+
+```bash
+latest
+vX.X.X
+```
+
+---
+
+# ☁️ Banco de Dados
+
+MongoDB Atlas com ambientes separados:
+
+## Homologação
+
+```bash
+livrosdb_hml
+```
+
+## Produção
+
+```bash
+livrosdb
+```
+
+---
+
+# 🌳 GitFlow
+
+Estratégia utilizada:
+
+```bash
+main
+develop
+feature/*
+```
+
+Fluxo:
+
+```bash
+feature → develop → main
+```
+
+Todo merge realizado através de:
+
+- Pull Requests
+- Code Review
+- Pipelines automatizadas
+
+---
+
+# 📝 Padronização de Commits
+
+Este projeto utiliza **Conventional Commits** para manter o histórico organizado e permitir o versionamento automático com **Semantic Release**.
+
+## Estrutura
+
+```bash
+tipo(escopo): descrição
+```
+
+Exemplo:
+
+```bash
+feat(auth): adiciona autenticação JWT
+```
+
+---
+
+## Tipos Utilizados
+
+| Tipo | Descrição | Gera versão? |
+|------|-----------|--------------|
+| `feat` | Nova funcionalidade | ✅ Minor |
+| `fix` | Correção de bugs | ✅ Patch |
+| `feat!` | Mudança incompatível | ✅ Major |
+| `docs` | Documentação | ❌ |
+| `style` | Formatação | ❌ |
+| `refactor` | Refatoração sem alterar regra | ❌ |
+| `test` | Testes | ❌ |
+| `chore` | Configurações, dependências, CI/CD | ❌ |
+| `ci` | Alterações de pipeline | ❌ |
+| `build` | Docker, dependências, build | ❌ |
+
+---
+
+## Exemplos Utilizados no Projeto
+
+### Backend
+
+```bash
+feat(auth): adiciona autenticação JWT
+```
+
+```bash
+fix(livros): corrige filtro por data de leitura
+```
+
+```bash
+feat(api): adiciona paginação de livros
+```
+
+---
+
+### CI/CD
+
+```bash
+feat(ci): integra docker hub no pipeline
+```
+
+```bash
+feat(cd): adiciona deploy automático do render
+```
+
+```bash
+chore(ci): reexecuta análise do sonar após ajuste do quality gate
+```
+
+---
+
+### Observabilidade
+
+```bash
+feat(observability): integra better stack no backend
+```
+
+---
+
+## Versionamento Automático
+
+O Semantic Release interpreta os commits automaticamente:
+
+```bash
+feat → 1.0.0 → 1.1.0
+fix → 1.1.0 → 1.1.1
+feat! → 1.1.1 → 2.0.0
+```
+
+---
+
+## Fluxo Utilizado no Projeto
+
+```bash
+feature/* → develop → main
+```
+
+Com:
+
+- Pull Requests obrigatórios
+- GitHub Actions
+- SonarCloud
+- Docker Build
+- Deploy automático
+
+---
+
+# 🧪 Testes Automatizados
+
+Frameworks utilizados:
+
+- Jest
+- Supertest
+
+Executar:
+
+```bash
+npm test
+```
+
+Cobertura atual:
+
+- Login
+- CRUD de livros
+- Autenticação JWT
+- Validações
+
+---
+
+# 📖 Swagger
+
+Documentação interativa:
+
+## Local
+
+```bash
+http://localhost:3000/api-docs
+```
+
+## Produção
+
+```bash
+https://catalogo-livros-pi-backend-prod-docker.onrender.com/api-docs
+```
+
+---
+
+# ⚙️ Pipeline CI/CD
+
+Pipeline implementada com **GitHub Actions**.
+
+Arquivo:
+
+```bash
+.github/workflows/ci.yml
+```
+
+---
+
+## A pipeline executa automaticamente:
+
+### Em qualquer push:
+
+✅ Checkout do código  
+✅ Instalação de dependências  
+✅ Inicialização da API  
+✅ Espera disponibilidade da aplicação  
+✅ Execução dos testes  
+
+---
+
+## Na branch develop:
+
+✅ Build Docker  
+✅ Push Docker Hub (HML)  
+✅ Trigger automático Render HML  
+
+---
+
+## Na branch main:
+
+✅ Semantic Release  
+✅ Versionamento automático  
+✅ Build Docker PROD  
+✅ Push Docker Hub PROD  
+✅ Trigger automático Render PROD  
+
+---
+
+# 🐳 Docker
+
+## Build local
+
+```bash
+docker build -t catalogo-livros-backend .
+```
+
+## Executar localmente
+
+```bash
+docker compose up
+```
+
+---
+
+# 🐳 Docker Hub
+
+Repositório:
+
+```bash
+https://hub.docker.com/r/goncahri/catalogo-livros-backend
+```
+
+Tags publicadas automaticamente:
+
+- `hml`
+- `develop`
+- `latest`
+- `versionadas`
+
+Exemplo:
+
+```bash
+1.0.0
+1.1.0
+```
+
+---
+
+# 🔖 Versionamento Automático
+
+Utilizando:
+
+```bash
+semantic-release
+```
+
+Commits convencionais:
+
+```bash
+feat:
+fix:
+docs:
+chore:
+```
+
+Exemplo:
+
+```bash
+feat(ci): integra docker hub
+```
+
+---
+
+# 📊 Observabilidade – Better Stack
+
+O projeto está integrado ao **Better Stack** para monitoramento em tempo real.
+
+## Monitoramentos implementados:
+
+✅ Inicialização do servidor  
+✅ Conexão com MongoDB  
+✅ Requisições HTTP  
+✅ Rotas acessadas  
+✅ Logs de erro  
+
+---
+
+## Exemplos de logs:
+
+```bash
+Servidor iniciado com sucesso
+Conexão com MongoDB realizada com sucesso
+Requisição recebida
+Rota raiz acessada
+```
+
+Recursos utilizados:
+
+- Live Tail
+- Histórico de logs
+- Busca em tempo real
+
+---
+
+# 🔎 SonarCloud
+
+Projeto integrado ao **SonarCloud** para análise contínua.
+
+## Métricas analisadas:
+
+✅ Bugs  
+✅ Vulnerabilidades  
+✅ Code Smells  
+✅ Security Hotspots  
+✅ Maintainability  
+✅ Reliability  
+
+Executado automaticamente em:
+
+- Push
+- Pull Requests
+
+---
+
+# 📧 Alertas de Pipeline
+
+A pipeline envia alertas automáticos por e-mail em caso de falha.
+
+Implementado com:
+
+- Gmail SMTP
+- GitHub Secrets
+- GitHub Actions
+
+Notificações incluem:
+
+- Branch
+- Commit
+- Autor
+- Link direto para o erro
+
+---
+
+# 🔐 Variáveis de Ambiente
+
+```env
+PORT=3000
+
+MONGO_URI=
+DB_NAME=
+
+SECRET_KEY=
+EXPIRES_IN=
+
+SENHA_USUARIO=
+
+BETTERSTACK_TOKEN=
+BETTERSTACK_HOST=
+
+NODE_ENV=
+```
+
+---
+
+# ▶️ Instalação Local
+
+## Clonar
+
+```bash
+git clone https://github.com/goncahri/Catalogo_Livros_PI_Backend.git
+```
+
+---
+
+## Instalar dependências
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Configure o arquivo `.env`
-
-Crie um arquivo `.env` na raiz seguindo o modelo abaixo:
-
-```env
-PORT=3000
-MONGO_URI=sua_uri_mongodb
-DB_NAME=livrosdb
-SECRET_KEY=seu_secret_jwt
-EXPIRES_IN=24h
-
-# Usuário de teste
-SENHA_USUARIO=senha-do-usuario-de-teste
-```
-
 ---
 
-## 📂 Estrutura do Projeto
-
-```
-.
-├── api/
-│   ├── config/           # Configurações (banco de dados)
-│   ├── controllers/      # Regras de negócio (CRUD, autenticação)
-│   ├── middleware/       # Middlewares (validação, auth)
-│   ├── model/            # Modelos do MongoDB
-│   ├── routes/           # Rotas da API
-│   ├── public/           # Front-end (HTML, imagens)
-│   ├── swagger.json      # Documentação Swagger gerada
-│   └── index.js          # Arquivo principal
-├── __tests__/            # Testes automatizados (Jest + Supertest)
-├── .env-example          # Exemplo de configuração
-├── jest.config.js        # Configuração do Jest
-├── package.json          # Dependências e scripts
-├── vercel.json           # Deploy no Vercel
-└── README.md             # Documentação
-```
-
----
-
-## 🔐 Autenticação JWT
-
-Para acessar os endpoints da API é necessário:
-
-- 🔑 Fazer login via `POST /api/usuarios/login`
-- Obter o token JWT (enviado na resposta)
-- Enviar esse token no header `Authorization` nas requisições protegidas.
-
-Exemplo de header:
-
-```http
-Authorization: Bearer seu_token_jwt
-```
-
----
-
-## 🔌 Endpoints da API
-
-### 🔐 Rotas de Usuário
-
-- `POST /api/usuarios/register` ➝ Cria um usuário
-- `POST /api/usuarios/login` ➝ Autentica e gera token
-
-### 📚 Rotas de Livros (Protegidas)
-
-- `GET /api/livros` ➝ Lista livros (com filtros, ordenação e paginação)
-- `GET /api/livros/:id` ➝ Busca livro por ID
-- `POST /api/livros` ➝ Cadastra novo livro
-- `PUT /api/livros/:id` ➝ Edita livro
-- `DELETE /api/livros/:id` ➝ Remove livro
-
-### 🌐 Documentação Swagger
-
-- `GET /api-docs` ➝ Acessa documentação interativa da API
-
----
-
-## 🧪 Testes
-
-### ✅ Instalação dos pacotes de testes
+## Rodar localmente
 
 ```bash
-npm install jest supertest -D
+npm start
 ```
 
-### ✅ Descrição dos pacotes:
+---
 
-| Pacote       | Descrição                                                               |
-| ------------- | ------------------------------------------------------------------------ |
-| **Jest**      | Framework de testes em JavaScript para testes unitários e integração.  |
-| **SuperTest** | Faz requisições HTTP e testa respostas de APIs Node.js.                 |
-
-### ✅ Organização dos testes:
-
-- Crie a pasta `__tests__` na raiz.
-- Crie os arquivos de testes, exemplo: `api.test.js`.
-
-### ✅ Scripts no `package.json`:
-
-```json
-"scripts": {
-  "test": "jest"
-}
-```
-
-### ✅ Executar os testes:
+## Rodar testes
 
 ```bash
-npm run test
+npm test
 ```
 
 ---
 
-## 📃 Documentação Swagger
-
-### 🚀 Instale os pacotes:
+## Rodar Docker
 
 ```bash
-npm install swagger-ui-express
-npm install swagger-autogen -D
-```
-
-### 🔗 Acesso à documentação interativa:
-
-```
-http://localhost:3000/api-docs
+docker compose up
 ```
 
 ---
 
-## 💾 Exemplo de livro
+# 👨‍💻 Equipe
 
-```json
-{
-  "titulo": "Clean Code",
-  "autor": "Robert C. Martin",
-  "paginas": 464,
-  "avaliacao": 4.8,
-  "dataLeitura": "2024-07-15"
-}
-```
+## Grupo Wi (World Innovation)
 
-## ☁️ Deploy no Vercel
-
-Este projeto está configurado para ser **hospedado no Vercel**, incluindo **front-end (HTML/CSS/JS)** e **back-end (API Node.js + MongoDB)** no mesmo repositório.
-
-### 🛠 Estrutura utilizada
-
-- O **back-end** está localizado na pasta `api/`
-- O **front-end** está na pasta `public/`
-- O arquivo `vercel.json` define o comportamento das rotas
-
-```
-├── api/              # API REST com Node.js e Express
-├── public/           # Interface Web (index.html + JS)
-├── vercel.json       # Arquivo de configuração do Vercel
-```
-
-### 🔁 Arquivo `vercel.json` utilizado
-
-```json
-{
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api"
-    }
-  ],
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "api/swagger/swagger_output.json"
-    }
-  }
-}
-```
-
-> A diretiva `rewrites` garante que as chamadas feitas para `/api/...` no front-end sejam redirecionadas corretamente para a API.
+- Herivelton Henrique Gonçalves
 
 ---
 
-### 🌐 Integração com Front-End
+# 📌 Status Atual do Backend
 
-No `index.html` (front-end), o `baseURL` das requisições é configurado dinamicamente para funcionar tanto localmente quanto na Vercel:
-
-```js
-const baseURL = window.location.hostname.includes("localhost")
-  ? "http://localhost:3000/api/livros"
-  : "/api/livros";
-```
-
----
-
-### 🔐 Variáveis de Ambiente no Vercel
-
-No painel da Vercel, adicione em **Settings > Environment Variables**:
-
-| Variável     | Descrição                                   |
-|--------------|----------------------------------------------|
-| `MONGO_URI`  | URI de conexão com MongoDB Atlas             |
-| `DB_NAME`    | Nome do banco de dados (exemplo: `livrosdb`) |
+✅ API REST  
+✅ MongoDB Atlas  
+✅ JWT  
+✅ Swagger  
+✅ Testes automatizados  
+✅ GitFlow  
+✅ GitHub Actions  
+✅ Semantic Release  
+✅ Docker  
+✅ Docker Hub  
+✅ Render HML  
+✅ Render PROD  
+✅ Deploy automático  
+✅ Better Stack  
+✅ SonarCloud  
+✅ Alertas por e-mail  
 
 ---
-
-## 🔥 Scripts Disponíveis
-
-| Comando        | Descrição                                     |
-|----------------|-----------------------------------------------|
-| `npm run dev`  | Inicia o servidor em modo desenvolvimento    |
-| `npm start`    | Inicia o servidor em modo produção           |
-| `npm run test` | Executa os testes automáticos                |
-
----
-
-## 🖥️ Demo
-
-Você pode acessar o projeto funcionando em:
-
-[https://catalogo-livros-lidos-final.vercel.app/]
-
----
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! 
-
-- Abra uma issue com melhorias, correções ou dúvidas.
-- Envie um pull request.
-
----
-
-## 📝 Licença
-
-Este projeto está licenciado sob a licença **MIT**.
-
----
-
-## 👤 Autor
-
-### Grupo Wi (World Innovation):
-
-### *Herivelton Henrique Gonçalves*
-### *Gabriel Ribeiro Correa*
-### *Breno Jose da Silva*
-### *Wendel Augusto Lopes Vasco*
-
-
