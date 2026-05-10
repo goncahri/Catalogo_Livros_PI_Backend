@@ -45,9 +45,25 @@ export const validarLivro = [
 
 // Validação de cadastro de usuário
 export const validarUsuario = [
+  body('nome')
+    .notEmpty().withMessage('O nome é obrigatório.')
+    .isLength({ min: 3 }).withMessage('O nome deve ter pelo menos 3 caracteres.'),
+
   body('email')
     .notEmpty().withMessage('O e-mail é obrigatório.')
     .isEmail().withMessage('O e-mail informado não é válido.'),
+
+  body('telefone')
+    .notEmpty().withMessage('O telefone/WhatsApp é obrigatório.')
+    .custom((value) => {
+      const telefoneLimpo = String(value).replace(/\D/g, '');
+
+      if (telefoneLimpo.length < 10 || telefoneLimpo.length > 13) {
+        throw new Error('O telefone deve conter entre 10 e 13 números, incluindo DDD e, se desejar, código do país.');
+      }
+
+      return true;
+    }),
 
   body('senha')
     .notEmpty().withMessage('A senha é obrigatória.')
@@ -58,7 +74,7 @@ export const validarUsuario = [
     .matches(/[^A-Za-z0-9]/).withMessage('A senha deve conter pelo menos um caractere especial.')
 ];
 
-// Tratamento centralizado dos erros
+// Tratamento dos erros
 export const tratarErros = (req, res, next) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
