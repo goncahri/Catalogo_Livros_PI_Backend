@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Catálogo de Livros Lidos",
-    "description": "API para gerenciar livros lidos com autenticação JWT",
-    "version": "1.0.0"
+    "description": "API para gerenciamento de livros, autenticação JWT e envio de spoilers criptografados com Cifra de César",
+    "version": "1.1.0"
   },
   "servers": [
     {
@@ -11,225 +11,413 @@
       "description": "Servidor Local"
     },
     {
-      "url": "https://catalogo-livros-lidos-final.vercel.app/api",
-      "description": "Servidor Produção"
+      "url": "https://catalogo-livros-pi-backend-hml-docker.onrender.com/api",
+      "description": "Servidor Homologação HML"
+    },
+    {
+      "url": "https://catalogo-livros-pi-backend-prod-docker.onrender.com/api",
+      "description": "Servidor Produção PROD"
     }
   ],
   "tags": [
+    {
+      "name": "Usuários",
+      "description": "Cadastro e autenticação de usuários"
+    },
     {
       "name": "Livros",
       "description": "Operações relacionadas aos livros"
     },
     {
-      "name": "Usuários",
-      "description": "Cadastro e autenticação de usuários"
+      "name": "Spoilers",
+      "description": "Modo spoiler com Cifra de César, hash único, e-mail e WhatsApp"
     }
   ],
   "paths": {
     "/usuarios": {
       "post": {
         "tags": ["Usuários"],
-        "description": "Cadastra um novo usuário",
+        "summary": "Cadastrar usuário",
+        "description": "Cadastra um novo usuário com nome, e-mail, telefone/WhatsApp e senha.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["nome", "email", "telefone", "senha"],
                 "properties": {
-                  "nome": { "type": "string", "example": "Usuário Teste" },
-                  "email": { "type": "string", "example": "usuario@teste.com.br" },
-                  "senha": { "type": "string", "example": "Abc123!" }
-                },
-                "required": ["nome", "email", "senha"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": { "description": "Usuário cadastrado com sucesso" },
-          "400": { "description": "Dados inválidos" },
-          "409": { "description": "Usuário já cadastrado" }
-        }
-      }
-    },
-    "/usuarios/login": {
-      "post": {
-        "tags": ["Usuários"],
-        "description": "Realiza login e retorna um token JWT",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": { "type": "string", "example": "usuario@teste.com.br" },
-                  "senha": { "type": "string", "example": "Abc123!" }
-                },
-                "required": ["email", "senha"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Login realizado com sucesso" },
-          "403": { "description": "Credenciais inválidas" }
-        }
-      }
-    },
-    "/livros": {
-      "get": {
-        "tags": ["Livros"],
-        "description": "Lista todos os livros (com filtros opcionais)",
-        "parameters": [
-          { "name": "titulo", "in": "query", "schema": { "type": "string" } },
-          { "name": "autor", "in": "query", "schema": { "type": "string" } },
-          { "name": "avaliacaoMin", "in": "query", "schema": { "type": "number" } },
-          { "name": "avaliacaoMax", "in": "query", "schema": { "type": "number" } },
-          { "name": "ano", "in": "query", "schema": { "type": "string" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer" } },
-          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
-          { "name": "sort", "in": "query", "schema": { "type": "string" } },
-          { "name": "order", "in": "query", "schema": { "type": "string", "example": "asc" } }
-        ],
-        "responses": {
-          "200": { "description": "Lista de livros retornada com sucesso" }
-        }
-      },
-      "post": {
-        "tags": ["Livros"],
-        "description": "Cadastra um novo livro",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "titulo": { "type": "string", "example": "Dom Casmurro" },
-                  "autor": { "type": "string", "example": "Machado de Assis" },
-                  "paginas": { "type": "integer", "example": 300 },
-                  "avaliacao": { "type": "number", "example": 4.5 },
-                  "dataLeitura": { "type": "string", "example": "2025-06-10" },
-                  "opiniao": { "type": "string", "example": "Excelente leitura." }
-                },
-                "required": ["titulo", "autor", "paginas", "avaliacao", "dataLeitura"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": { "description": "Livro cadastrado com sucesso" },
-          "400": { "description": "Dados inválidos" }
-        }
-      }
-    },
-    "/livros/{id}": {
-      "get": {
-        "tags": ["Livros"],
-        "description": "Busca um livro pelo ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "example": "684f191777c45c8bc0af18f4" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Livro encontrado com sucesso" },
-          "404": { "description": "Livro não encontrado" }
-        }
-      },
-      "put": {
-        "tags": ["Livros"],
-        "description": "Atualiza um livro pelo ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "example": "684f191777c45c8bc0af18f4" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "titulo": { "type": "string", "example": "Dom Casmurro" },
-                  "autor": { "type": "string", "example": "Machado de Assis" },
-                  "paginas": { "type": "integer", "example": 300 },
-                  "avaliacao": { "type": "number", "example": 4.5 },
-                  "dataLeitura": { "type": "string", "example": "2025-06-10" },
-                  "opiniao": { "type": "string", "example": "Excelente leitura." }
+                  "nome": {
+                    "type": "string",
+                    "example": "Herivelton Henrique"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "heri@email.com"
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "example": "5515999999999"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "Abc123!"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Livro atualizado com sucesso" },
-          "404": { "description": "Livro não encontrado" }
+          "201": {
+            "description": "Usuário criado"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "409": {
+            "description": "E-mail já cadastrado"
+          }
+        }
+      }
+    },
+    "/usuarios/login": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Login",
+        "description": "Realiza login e retorna token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "senha"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "heri@email.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "Abc123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado"
+          },
+          "403": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/livros": {
+      "get": {
+        "tags": ["Livros"],
+        "summary": "Listar livros",
+        "description": "Lista livros cadastrados.",
+        "responses": {
+          "200": {
+            "description": "Lista retornada"
+          }
         }
       },
-      "delete": {
+      "post": {
         "tags": ["Livros"],
-        "description": "Deleta um livro pelo ID",
+        "summary": "Cadastrar livro",
+        "description": "Cadastra um novo livro.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["titulo", "autor", "paginas", "avaliacao", "dataLeitura"],
+                "properties": {
+                  "titulo": {
+                    "type": "string",
+                    "example": "Dom Casmurro"
+                  },
+                  "autor": {
+                    "type": "string",
+                    "example": "Machado de Assis"
+                  },
+                  "paginas": {
+                    "type": "integer",
+                    "example": 300
+                  },
+                  "avaliacao": {
+                    "type": "number",
+                    "example": 5
+                  },
+                  "dataLeitura": {
+                    "type": "string",
+                    "example": "2026-05-10"
+                  },
+                  "opiniao": {
+                    "type": "string",
+                    "example": "Excelente leitura."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Livro cadastrado"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        }
+      }
+    },
+    "/livros/{id}": {
+      "get": {
+        "tags": ["Livros"],
+        "summary": "Buscar livro por ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "example": "684f191777c45c8bc0af18f4" }
+            "schema": {
+              "type": "string",
+              "example": "684f191777c45c8bc0af18f4"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "Livro deletado com sucesso" },
-          "404": { "description": "Livro não encontrado" }
+          "200": {
+            "description": "Livro encontrado"
+          },
+          "404": {
+            "description": "Livro não encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Livros"],
+        "summary": "Atualizar livro",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "684f191777c45c8bc0af18f4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Livro atualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Livros"],
+        "summary": "Excluir livro",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "684f191777c45c8bc0af18f4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Livro excluído"
+          }
         }
       }
     },
     "/livros/destaques": {
       "get": {
         "tags": ["Livros"],
-        "description": "Retorna os livros em destaque",
+        "summary": "Listar livros em destaque",
         "responses": {
-          "200": { "description": "Destaques retornados com sucesso" }
+          "200": {
+            "description": "Destaques retornados"
+          }
         }
       }
     },
     "/livros/busca/avancada": {
       "get": {
         "tags": ["Livros"],
-        "description": "Realiza uma busca avançada nos livros",
+        "summary": "Busca avançada",
         "parameters": [
-          { "name": "avaliacaoMin", "in": "query", "schema": { "type": "number" } },
-          { "name": "avaliacaoMax", "in": "query", "schema": { "type": "number" } }
+          {
+            "name": "avaliacaoMin",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "avaliacaoMax",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Busca realizada com sucesso" }
+          "200": {
+            "description": "Busca realizada"
+          }
         }
       }
     },
     "/livros/busca/google/{titulo}": {
       "get": {
         "tags": ["Livros"],
-        "description": "Busca informações do livro na API Google Books pelo título",
+        "summary": "Buscar livro no Google Books",
         "parameters": [
           {
             "name": "titulo",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string",
+              "example": "Dom Casmurro"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "Informações retornadas com sucesso" },
-          "404": { "description": "Livro não encontrado na API Google Books" }
+          "200": {
+            "description": "Livro encontrado"
+          },
+          "404": {
+            "description": "Livro não encontrado"
+          }
+        }
+      }
+    },
+    "/spoilers/usuarios": {
+      "get": {
+        "tags": ["Spoilers"],
+        "summary": "Listar usuários",
+        "description": "Retorna usuários cadastrados para seleção do destinatário do spoiler.",
+        "responses": {
+          "200": {
+            "description": "Usuários retornados"
+          }
+        }
+      }
+    },
+    "/spoilers/criptografar": {
+      "post": {
+        "tags": ["Spoilers"],
+        "summary": "Criar spoiler criptografado",
+        "description": "Cria um spoiler usando Cifra de César, gera hash único, salva no banco e envia os dados ao destinatário por e-mail. A mensagem criptografada e o hash podem ser compartilhados também via WhatsApp no frontend.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["livro", "mensagem", "passo", "destinatarioId"],
+                "properties": {
+                  "livro": {
+                    "type": "string",
+                    "example": "Harry Potter"
+                  },
+                  "mensagem": {
+                    "type": "string",
+                    "example": "Snape mata Dumbledore"
+                  },
+                  "passo": {
+                    "type": "integer",
+                    "example": 3
+                  },
+                  "destinatarioId": {
+                    "type": "string",
+                    "example": "682000000000000000000000"
+                  },
+                  "tipoEnvio": {
+                    "type": "string",
+                    "example": "whatsapp"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Spoiler criado com sucesso"
+          },
+          "400": {
+            "description": "Dados obrigatórios ausentes ou inválidos"
+          },
+          "404": {
+            "description": "Destinatário não encontrado"
+          }
+        }
+      }
+    },
+    "/spoilers/recebidos": {
+      "get": {
+        "tags": ["Spoilers"],
+        "summary": "Listar spoilers recebidos",
+        "description": "Lista os spoilers recebidos pelo usuário autenticado.",
+        "responses": {
+          "200": {
+            "description": "Spoilers retornados"
+          }
+        }
+      }
+    },
+    "/spoilers/revelar": {
+      "post": {
+        "tags": ["Spoilers"],
+        "summary": "Revelar spoiler",
+        "description": "Revela um spoiler uma única vez utilizando a mensagem criptografada e o hash. Após a revelação, o hash é marcado como usado.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["mensagemCriptografada", "hash"],
+                "properties": {
+                  "mensagemCriptografada": {
+                    "type": "string",
+                    "example": "Vqdsh pdwd Gxpeohgruh"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "example": "A4B8C1D2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spoiler revelado"
+          },
+          "400": {
+            "description": "Hash já utilizado ou dados inválidos"
+          },
+          "404": {
+            "description": "Spoiler não encontrado"
+          }
         }
       }
     }

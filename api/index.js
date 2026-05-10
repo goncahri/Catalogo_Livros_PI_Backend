@@ -10,6 +10,7 @@ import { connectToDatabase } from "./config/db.js";
 import { logInfo, logError } from "./config/logger.js";
 import livrosRoutes from "./routes/livros.js";
 import usuariosRoutes from "./routes/usuarios.js";
+import spoilersRoutes from "./routes/spoilers.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/docs", express.static("public/docs"));
 // Rotas principais
 app.use("/api/livros", livrosRoutes);
 app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/spoilers", spoilersRoutes);
 
 // Rota raiz
 app.get("/", async (req, res) => {

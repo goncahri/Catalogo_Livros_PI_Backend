@@ -5,27 +5,48 @@ export const insereUsuario = async (req, res) => {
   try {
     const db = req.app.locals.db
 
+    const { nome, email, telefone, senha } = req.body
+
+    if (!nome || !email || !telefone || !senha) {
+      return res.status(400).json({
+        error: true,
+        message: 'Nome, e-mail, telefone e senha são obrigatórios.'
+      })
+    }
+
     // Verificar se o e-mail já existe
-    const emailExistente = await db.collection('usuarios').findOne({ email: req.body.email })
+    const emailExistente = await db.collection('usuarios').findOne({ email })
     if (emailExistente) {
       return res.status(409).json({
         erros: [{
-          value: req.body.email,
+          value: email,
           msg: 'Este e-mail já está cadastrado.',
           param: 'email'
         }]
       })
     }
 
+    // Mantém apenas números no telefone
+    const telefoneFormatado = String(telefone).replace(/\D/g, '')
+
     // Gera avatar automático
-    req.body.avatar = `https://ui-avatars.com/api/?name=${req.body.nome.replace(/ /g, '+')}&background=F00&color=FFF`
+    const avatar = `https://ui-avatars.com/api/?name=${nome.replace(/ /g, '+')}&background=F00&color=FFF`
 
     // Criptografa a senha
     const salt = await bcrypt.genSalt(10)
-    req.body.senha = await bcrypt.hash(req.body.senha, salt)
+    const senhaCriptografada = await bcrypt.hash(senha, salt)
+
+    const novoUsuario = {
+      nome,
+      email,
+      telefone: telefoneFormatado,
+      senha: senhaCriptografada,
+      avatar,
+      createdAt: new Date()
+    }
 
     // Insere o usuário no banco
-    const result = await db.collection('usuarios').insertOne(req.body)
+    const result = await db.collection('usuarios').insertOne(novoUsuario)
 
     res.status(201).send(result)
   } catch (err) {
@@ -68,13 +89,15 @@ export const efetuaLogin = async (req, res) => {
       (err, token) => {
         if (err) throw err
         res.status(200).json({
-        access_token: token,
-        usuario: {
-          nome: usuario.nome,
-          avatar: usuario.avatar
-        },
-        msg: 'Login efetuado com sucesso'
-      })
+          access_token: token,
+          usuario: {
+            nome: usuario.nome,
+            email: usuario.email,
+            telefone: usuario.telefone,
+            avatar: usuario.avatar
+          },
+          msg: 'Login efetuado com sucesso'
+        })
       }
     )
   } catch (e) {
