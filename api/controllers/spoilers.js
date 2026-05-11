@@ -94,17 +94,8 @@ export const criarSpoiler = async (req, res) => {
       });
     }
 
-    if (!destinatario.email) {
-      return res.status(400).json({
-        error: "O destinatário não possui e-mail cadastrado."
-      });
-    }
-
-    if (!destinatario.telefone) {
-      return res.status(400).json({
-        error: "O destinatário não possui telefone/WhatsApp cadastrado."
-      });
-    }
+    const possuiEmail = !!destinatario.email;
+    const possuiTelefone = !!destinatario.telefone;
 
     const hash = crypto
       .randomBytes(4)
@@ -132,8 +123,9 @@ Acesse o sistema para revelar o spoiler.`;
     const mensagemWhatsapp =
       encodeURIComponent(mensagemWhatsappTexto);
 
-    const whatsappUrl =
-      `https://wa.me/${destinatario.telefone}?text=${mensagemWhatsapp}`;
+    const whatsappUrl = possuiTelefone
+      ? `https://wa.me/${destinatario.telefone}?text=${mensagemWhatsapp}`
+      : "";
 
     const spoiler = {
       remetenteId:
@@ -143,10 +135,10 @@ Acesse o sistema para revelar o spoiler.`;
         new ObjectId(destinatarioId),
 
       destinatarioEmail:
-        destinatario.email,
+        destinatario.email || null,
 
       destinatarioTelefone:
-        destinatario.telefone,
+        destinatario.telefone || null,
 
       livro,
 
@@ -180,28 +172,29 @@ Acesse o sistema para revelar o spoiler.`;
         .collection("spoilers")
         .insertOne(spoiler);
 
-    try {
-      await enviarHashEmail({
+    if (possuiEmail) {
+      enviarHashEmail({
         email: destinatario.email,
         livro,
         mensagemCriptografada,
         hash
-      });
-
-      await db
-        .collection("spoilers")
-        .updateOne(
-          { _id: result.insertedId },
-          {
-            $set: {
-              emailEnviado: true,
-              emailEnviadoEm: new Date()
-            }
-          }
-        );
-
-    } catch (emailError) {
-      console.error("Erro ao enviar spoiler por e-mail:", emailError);
+      })
+        .then(async () => {
+          await db
+            .collection("spoilers")
+            .updateOne(
+              { _id: result.insertedId },
+              {
+                $set: {
+                  emailEnviado: true,
+                  emailEnviadoEm: new Date()
+                }
+              }
+            );
+        })
+        .catch((emailError) => {
+          console.error("Erro ao enviar spoiler por e-mail:", emailError);
+        });
     }
 
     res.status(201).json({
@@ -216,14 +209,20 @@ Acesse o sistema para revelar o spoiler.`;
 
       whatsappUrl,
 
+      possuiEmail,
+
+      possuiTelefone,
+
       destinatario: {
         nome: destinatario.nome,
-        email: destinatario.email,
-        telefone: destinatario.telefone
+        email: destinatario.email || null,
+        telefone: destinatario.telefone || null
       },
 
       aviso:
-        "Spoiler criado. A mensagem criptografada e o hash foram preparados para WhatsApp e enviados por e-mail ao destinatário."
+        possuiEmail
+          ? "Spoiler criado. A mensagem criptografada e o hash foram enviados por e-mail quando possível e também estão disponíveis no sistema."
+          : "Spoiler criado. O destinatário não possui e-mail cadastrado, mas o spoiler está disponível no sistema."
     });
 
   } catch (error) {
