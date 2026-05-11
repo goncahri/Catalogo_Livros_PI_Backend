@@ -202,6 +202,24 @@ export const consultaAvancada = async (req, res) => {
   }
 };
 
+const montarUrlGoogleBooks = (termo, lang = null) => {
+  const googleBooksKey = process.env.GOOGLE_BOOKS_KEY;
+  const params = new URLSearchParams();
+
+  params.append("q", termo);
+  params.append("maxResults", "1");
+
+  if (lang) {
+    params.append("langRestrict", lang);
+  }
+
+  if (googleBooksKey) {
+    params.append("key", googleBooksKey);
+  }
+
+  return `https://www.googleapis.com/books/v1/volumes?${params.toString()}`;
+};
+
 // Busca dados do Google Books por título
 export const buscarLivroGoogle = async (req, res) => {
   const { titulo } = req.params;
@@ -209,16 +227,33 @@ export const buscarLivroGoogle = async (req, res) => {
     return res.status(400).json({ error: "Título obrigatório." });
   }
 
-  const buscarLivro = async (lang) => {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(titulo)}${lang ? `&langRestrict=${lang}` : ""}&maxResults=1`;
+  const buscarLivro = async (termo, lang) => {
+    const url = montarUrlGoogleBooks(termo, lang);
     const response = await fetch(url);
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Erro Google Books:", data);
+      return null;
+    }
+
     return data.items?.[0] || null;
   };
 
   try {
-    let item = await buscarLivro("pt");
-    if (!item) item = await buscarLivro(null);
+    let item = await buscarLivro(`intitle:${titulo}`, "pt");
+
+    if (!item) {
+      item = await buscarLivro(titulo, "pt");
+    }
+
+    if (!item) {
+      item = await buscarLivro(`intitle:${titulo}`, null);
+    }
+
+    if (!item) {
+      item = await buscarLivro(titulo, null);
+    }
 
     if (!item) {
       return res.status(404).json({ error: "Livro não encontrado no Google Books." });
@@ -254,8 +289,14 @@ export const getLivrosDestaque = async (req, res) => {
 
     const resultados = await Promise.all(livros.map(async (livro) => {
       try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(livro.titulo)}&maxResults=1`);
+        const response = await fetch(montarUrlGoogleBooks(`intitle:${livro.titulo}`));
         const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Erro Google Books nos destaques:", data);
+          return { ...livro, thumbnail: null };
+        }
+
         const thumbnail = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail || null;
         return { ...livro, thumbnail };
       } catch {
